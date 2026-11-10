@@ -1,0 +1,325 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e892a218c374f98acf340b1df356e91, type: 3}
+  m_Name: DemoCourse
+  m_EditorClassIdentifier:
+  title: Word Explorer
+  flashlightRadius: 0.22
+  flashlightFeather: 0.025
+  autoPronounce: 1
+  rememberLesson: 1
+  progressKey: EnglishLearning.Demo.LastLesson
+  vocabulary:
+  - id: apple
+    english: Apple
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39801, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 0
+  - id: banana
+    english: Banana
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39802, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 1
+  - id: orange
+    english: Orange
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39803, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 2
+  - id: strawberry
+    english: Strawberry
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39804, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 3
+  - id: pear
+    english: Pear
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39805, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 4
+  - id: book
+    english: Book
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39806, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 5
+  - id: pencil
+    english: Pencil
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39807, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 6
+  - id: cup
+    english: Cup
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39808, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 7
+  - id: key
+    english: Key
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39809, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 8
+  - id: ball
+    english: Ball
+    pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39810, type: 3}
+    sprite: {fileID: 0}
+    demoIcon: 9
+  lessons:
+  - id: fruit
+    title: Fruit Basket
+    background: {r: 0.87, g: 0.92, b: 0.84, a: 1}
+    shuffleWords: 0
+    objects:
+    - wordId: apple
+      position: {x: 0.25, y: 0.76}
+      size: 0.24
+      rotation: -8
+    - wordId: banana
+      position: {x: 0.73, y: 0.74}
+      size: 0.27
+      rotation: 12
+    - wordId: orange
+      position: {x: 0.48, y: 0.48}
+      size: 0.24
+      rotation: 0
+    - wordId: strawberry
+      position: {x: 0.24, y: 0.22}
+      size: 0.25
+      rotation: -10
+    - wordId: pear
+      position: {x: 0.74, y: 0.23}
+      size: 0.25
+      rotation: 7
+  - id: everyday
+    title: Everyday Things
+    background: {r: 0.83, g: 0.9, b: 0.94, a: 1}
+    shuffleWords: 0
+    objects:
+    - wordId: book
+      position: {x: 0.24, y: 0.77}
+      size: 0.27
+      rotation: -10
+    - wordId: pencil
+      position: {x: 0.74, y: 0.74}
+      size: 0.28
+      rotation: 8
+    - wordId: cup
+      position: {x: 0.48, y: 0.47}
+      size: 0.26
+      rotation: 0
+    - wordId: key
+      position: {x: 0.24, y: 0.23}
+      size: 0.26
+      rotation: 15
+    - wordId: ball
+      position: {x: 0.74, y: 0.23}
+      size: 0.25
+      rotation: -6
+  - id: mixed
+    title: Explorer Challenge
+    background: {r: 0.94, g: 0.89, b: 0.81, a: 1}
+    shuffleWords: 1
+    objects:
+    - wordId: apple
+      position: {x: 0.2, y: 0.79}
+      size: 0.22
+      rotation: -12
+    - wordId: book
+      position: {x: 0.74, y: 0.79}
+      size: 0.24
+      rotation: 9
+    - wordId: banana
+      position: {x: 0.22, y: 0.5}
+      size: 0.24
+      rotation: 0
+    - wordId: cup
+      position: {x: 0.74, y: 0.5}
+      size: 0.24
+      rotation: -8
+    - wordId: strawberry
+      position: {x: 0.22, y: 0.2}
+      size: 0.23
+      rotation: 9
+    - wordId: ball
+      position: {x: 0.75, y: 0.21}
+      size: 0.23
+      rotation: 0
+  - id: fruit-review
+    title: Fruit Review
+    background: {r: 0.95, g: 0.88, b: 0.78, a: 1}
+    shuffleWords: 1
+    objects:
+    - wordId: pear
+      position: {x: 0.24, y: 0.78}
+      size: 0.24
+      rotation: -6
+    - wordId: strawberry
+      position: {x: 0.74, y: 0.78}
+      size: 0.24
+      rotation: 8
+    - wordId: orange
+      position: {x: 0.50, y: 0.50}
+      size: 0.24
+      rotation: 0
+    - wordId: banana
+      position: {x: 0.24, y: 0.22}
+      size: 0.25
+      rotation: -12
+    - wordId: apple
+      position: {x: 0.75, y: 0.22}
+      size: 0.24
+      rotation: 10
+  - id: picnic
+    title: Picnic Time
+    background: {r: 0.85, g: 0.93, b: 0.86, a: 1}
+    shuffleWords: 0
+    objects:
+    - wordId: cup
+      position: {x: 0.25, y: 0.78}
+      size: 0.24
+      rotation: -8
+    - wordId: apple
+      position: {x: 0.75, y: 0.78}
+      size: 0.24
+      rotation: 6
+    - wordId: book
+      position: {x: 0.50, y: 0.50}
+      size: 0.25
+      rotation: -5
+    - wordId: ball
+      position: {x: 0.25, y: 0.22}
+      size: 0.24
+      rotation: 0
+    - wordId: banana
+      position: {x: 0.75, y: 0.22}
+      size: 0.25
+      rotation: 12
+  - id: study-time
+    title: Study Time
+    background: {r: 0.82, g: 0.88, b: 0.96, a: 1}
+    shuffleWords: 1
+    objects:
+    - wordId: pencil
+      position: {x: 0.24, y: 0.78}
+      size: 0.27
+      rotation: -15
+    - wordId: book
+      position: {x: 0.75, y: 0.78}
+      size: 0.27
+      rotation: 10
+    - wordId: key
+      position: {x: 0.50, y: 0.50}
+      size: 0.24
+      rotation: -10
+    - wordId: cup
+      position: {x: 0.24, y: 0.22}
+      size: 0.24
+      rotation: 5
+    - wordId: ball
+      position: {x: 0.75, y: 0.22}
+      size: 0.24
+      rotation: -7
+  - id: home-review
+    title: Home Review
+    background: {r: 0.93, g: 0.86, b: 0.92, a: 1}
+    shuffleWords: 0
+    objects:
+    - wordId: key
+      position: {x: 0.24, y: 0.78}
+      size: 0.25
+      rotation: 12
+    - wordId: cup
+      position: {x: 0.75, y: 0.78}
+      size: 0.24
+      rotation: -6
+    - wordId: pencil
+      position: {x: 0.50, y: 0.50}
+      size: 0.27
+      rotation: 18
+    - wordId: book
+      position: {x: 0.24, y: 0.22}
+      size: 0.26
+      rotation: -8
+    - wordId: ball
+      position: {x: 0.75, y: 0.22}
+      size: 0.24
+      rotation: 8
+  - id: grand-review
+    title: Grand Review
+    background: {r: 0.9, g: 0.9, b: 0.82, a: 1}
+    shuffleWords: 1
+    objects:
+    - wordId: apple
+      position: {x: 0.20, y: 0.80}
+      size: 0.20
+      rotation: -8
+    - wordId: banana
+      position: {x: 0.50, y: 0.80}
+      size: 0.22
+      rotation: 8
+    - wordId: orange
+      position: {x: 0.80, y: 0.80}
+      size: 0.20
+      rotation: 0
+    - wordId: book
+      position: {x: 0.20, y: 0.50}
+      size: 0.22
+      rotation: -8
+    - wordId: pencil
+      position: {x: 0.80, y: 0.50}
+      size: 0.22
+      rotation: 10
+    - wordId: strawberry
+      position: {x: 0.20, y: 0.20}
+      size: 0.21
+      rotation: -6
+    - wordId: pear
+      position: {x: 0.50, y: 0.20}
+      size: 0.21
+      rotation: 7
+    - wordId: cup
+      position: {x: 0.80, y: 0.20}
+      size: 0.21
+      rotation: 0
+  - id: final-challenge
+    title: Final Challenge
+    background: {r: 0.18, g: 0.31, b: 0.38, a: 1}
+    shuffleWords: 1
+    objects:
+    - wordId: apple
+      position: {x: 0.20, y: 0.80}
+      size: 0.19
+      rotation: -8
+    - wordId: banana
+      position: {x: 0.50, y: 0.80}
+      size: 0.20
+      rotation: 8
+    - wordId: orange
+      position: {x: 0.80, y: 0.80}
+      size: 0.19
+      rotation: 0
+    - wordId: strawberry
+      position: {x: 0.20, y: 0.50}
+      size: 0.20
+      rotation: -7
+    - wordId: pear
+      position: {x: 0.80, y: 0.50}
+      size: 0.20
+      rotation: 8
+    - wordId: book
+      position: {x: 0.20, y: 0.20}
+      size: 0.20
+      rotation: -8
+    - wordId: pencil
+      position: {x: 0.50, y: 0.20}
+      size: 0.20
+      rotation: 12
+    - wordId: cup
+      position: {x: 0.80, y: 0.20}
+      size: 0.20
+      rotation: 0

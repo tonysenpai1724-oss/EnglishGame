@@ -69,6 +69,28 @@ MonoBehaviour:
     pronunciation: {fileID: 8300000, guid: 926c91910032468885a9172f30d39810, type: 3}
     sprite: {fileID: 0}
     demoIcon: 9
+  topics:
+  - id: fruits
+    title: Fruits
+    description: Learn fruit names, then practice with a shuffled review.
+    lessonIds:
+    - fruit
+    - fruit-review
+  - id: everyday-objects
+    title: Everyday Objects
+    description: Explore things at home and around your study desk.
+    lessonIds:
+    - everyday
+    - study-time
+    - home-review
+  - id: explorer
+    title: Explorer Adventures
+    description: Mix familiar words in picnic, review, and challenge lessons.
+    lessonIds:
+    - mixed
+    - picnic
+    - grand-review
+    - final-challenge
   lessons:
   - id: fruit
     title: Fruit Basket

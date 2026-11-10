@@ -45,7 +45,9 @@ public static class EnglishLearningTools
             Require(word.pronunciation != null && word.pronunciation.length > 0,"Missing pronunciation: " + word.id);
         Require(Resources.Load<Shader>("EnglishLearning/Flashlight") != null,"Missing flashlight shader.");
         LessonSessionTests.RunAll();
-        Debug.Log("English Learning: course, ten pronunciation clips, shader reference, and model tests PASS.");
+        CourseProgressTests.RunAll();
+        CourseTopicTests.RunAll(course);
+        Debug.Log("English Learning: topics, lesson references, pronunciation clips, shader, lesson/progress/navigation tests PASS.");
     }
 
     private static void Require(bool condition,string message)
@@ -72,7 +74,7 @@ public static class EnglishLearningTools
         try
         {
             ValidateDemo();
-            File.WriteAllText("Temp/EnglishLearning.validation.txt","PASS: course, audio, shader reference, model tests.");
+            File.WriteAllText("Temp/EnglishLearning.validation.txt","PASS: course/topics, audio, shader reference, model/progress/topic-navigation tests.");
         }
         catch (Exception ex)
         {

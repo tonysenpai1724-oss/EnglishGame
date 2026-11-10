@@ -24,9 +24,9 @@ namespace EnglishLearning
         private Vector2 previousSize;
         private Rect previousSafeArea;
         public FlashlightOverlay Flashlight { get; private set; }
-        public event Action SpeakerPressed, LessonsPressed, RestartPressed;
-        public event Action<int> LessonChosen;
-        public event Action NextPressed, ReplayPressed, HomePressed;
+        public event Action SpeakerPressed, TopicsPressed, RestartPressed;
+        public event Action<int> TopicChosen, LessonChosen;
+        public event Action NextPressed, ReplayPressed, HomePressed, BackToTopicsPressed, ResumePressed;
 
         private sealed class ObjectView
         {
@@ -59,7 +59,8 @@ namespace EnglishLearning
             lessonLabel = Label(content, "Lesson title", "WORD EXPLORER", 23, Navy);
             Place(lessonLabel.rectTransform, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, -12), new Vector2(480, 34));
             lessonLabel.alignment = TextAlignmentOptions.MidlineLeft;
-            var menu = Button(content, "Lessons", Cream, () => LessonsPressed?.Invoke());
+            lessonLabel.enableAutoSizing = true; lessonLabel.fontSizeMin = 12; lessonLabel.fontSizeMax = 23;
+            var menu = Button(content, "Topics", Cream, () => TopicsPressed?.Invoke());
             Place(menu.GetComponent<RectTransform>(), new Vector2(1,1), new Vector2(1,1), new Vector2(0,-8), new Vector2(144,48));
             card = Panel(content, "Word card", Color.white).rectTransform;
             Place(card, new Vector2(0,1), new Vector2(0,1), new Vector2(0,-66), new Vector2(680,112));
@@ -179,30 +180,98 @@ namespace EnglishLearning
             feedback.color = success ? new Color(.12f,.43f,.32f) : Muted;
         }
 
-        public void ShowLessons(EnglishCourse course, int selected)
+        public void SetLessonTitle(string text) => lessonLabel.text = text;
+        public void ResumeGame() => CloseDialog();
+
+        public void ShowTopics(EnglishCourse course, CourseProgress progress, int selected, bool canResume)
         {
-            OpenDialog();
-            var panel = DialogCard("CHOOSE A LESSON", new Vector2(580,660));
-            var scrollRect = Rect(panel, "Lesson scroll"); Stretch(scrollRect);
-            scrollRect.offsetMin = new Vector2(24,homeNavigationEnabled ? 140 : 86); scrollRect.offsetMax = new Vector2(-24,-86);
-            var scroll = scrollRect.gameObject.AddComponent<ScrollRect>(); scroll.horizontal = false;
-            var viewport = Panel(scrollRect, "Viewport", Color.white).rectTransform; Stretch(viewport);
-            viewport.gameObject.AddComponent<RectMask2D>();
-            var list = Rect(viewport, "Lessons");
-            list.anchorMin = new Vector2(0,1); list.anchorMax = Vector2.one; list.pivot = new Vector2(.5f,1);
-            list.sizeDelta = new Vector2(0,course.lessons.Count * 82);
-            scroll.viewport = viewport; scroll.content = list; scroll.movementType = ScrollRect.MovementType.Clamped;
-            for (int i = 0; i < course.lessons.Count; i++)
+            OpenDialog(true);
+            var panel = DialogCard("CHOOSE A TOPIC", new Vector2(680,1040));
+            int completed = 0, total = 0;
+            foreach (var topic in course.topics)
+            {
+                completed += progress.CompletedCount(topic.id,topic.lessonIds);
+                total += topic.lessonIds.Count;
+            }
+            var subtitle = Label(panel,"Course summary",course.topics.Count + " topics  |  " + completed + " / " + total + " lessons completed",19,Muted);
+            Place(subtitle.rectTransform,new Vector2(.5f,1),new Vector2(.5f,1),new Vector2(0,-76),new Vector2(panel.rect.width-48,32));
+            float bottom = PickerFooter(panel,canResume,false);
+            var list = PickerList(panel,"Topic list",course.topics.Count,132,bottom,124);
+            for (int i = 0; i < course.topics.Count; i++)
             {
                 int index = i;
-                var button = Button(list, (i + 1) + ". " + course.lessons[i].title, i == selected ? Gold : Cream, () => LessonChosen?.Invoke(index));
-                var r = button.GetComponent<RectTransform>();
-                r.anchorMin = new Vector2(0,1); r.anchorMax = Vector2.one; r.pivot = new Vector2(.5f,1);
-                r.anchoredPosition = new Vector2(0,-i*82); r.sizeDelta = new Vector2(0,68);
+                var topic = course.topics[i];
+                string detail = progress.CompletedCount(topic.id,topic.lessonIds) + " / " + topic.lessonIds.Count + " lessons completed\n" + topic.description;
+                PickerRow(list,"Topic:" + topic.id,topic.title,detail,i,132,i == selected,() => TopicChosen?.Invoke(index));
             }
-            var close = Button(panel, "Back to game", Navy, CloseDialog, Color.white);
-            Place(close.GetComponent<RectTransform>(), new Vector2(.5f,0), new Vector2(.5f,0), new Vector2(0,homeNavigationEnabled ? 76 : 20), new Vector2(300,50));
-            AddDialogHomeButton(panel,20);
+        }
+
+        public void ShowLessons(EnglishCourse course, int topicIndex, CourseProgress progress, bool canResume)
+        {
+            OpenDialog(true);
+            var topic = course.topics[topicIndex];
+            var panel = DialogCard(topic.title,new Vector2(680,1040));
+            var subtitle = Label(panel,"Topic description",topic.description,19,Muted);
+            Place(subtitle.rectTransform,new Vector2(.5f,1),new Vector2(.5f,1),new Vector2(0,-76),new Vector2(panel.rect.width-48,54));
+            float bottom = PickerFooter(panel,canResume,true);
+            var list = PickerList(panel,"Lesson list",topic.lessonIds.Count,106,bottom,144);
+            for (int i = 0; i < topic.lessonIds.Count; i++)
+            {
+                int lessonIndex = course.FindLessonIndex(topic.lessonIds[i]);
+                var lesson = course.lessons[lessonIndex];
+                bool done = progress.IsCompleted(topic.id,lesson.id);
+                bool last = progress.LastLesson(topic.id) == lesson.id;
+                string detail = done ? "Completed - play again" : last ? "Last played - start again" : lesson.objects.Count + " objects to explore";
+                PickerRow(list,"Lesson:" + lesson.id,(i+1) + ". " + lesson.title,detail,i,106,last,() => LessonChosen?.Invoke(lessonIndex));
+            }
+        }
+
+        private float PickerFooter(RectTransform panel, bool canResume, bool backToTopics)
+        {
+            float y = 20;
+            if (homeNavigationEnabled) { AddDialogHomeButton(panel,y); y += 54; }
+            if (canResume)
+            {
+                var resume = Button(panel,"Continue lesson",Navy,() => ResumePressed?.Invoke(),Color.white);
+                Place(resume.GetComponent<RectTransform>(),new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,y),new Vector2(320,48));
+                y += 58;
+            }
+            if (backToTopics)
+            {
+                var back = Button(panel,"All topics",Cream,() => BackToTopicsPressed?.Invoke());
+                Place(back.GetComponent<RectTransform>(),new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,y),new Vector2(320,48));
+                y += 58;
+            }
+            return y + 12;
+        }
+
+        private RectTransform PickerList(RectTransform panel, string name, int count, float step, float bottom, float top)
+        {
+            var scrollRect = Rect(panel,name + " scroll"); Stretch(scrollRect);
+            scrollRect.offsetMin = new Vector2(24,bottom); scrollRect.offsetMax = new Vector2(-24,-top);
+            var scroll = scrollRect.gameObject.AddComponent<ScrollRect>(); scroll.horizontal = false;
+            var viewport = Panel(scrollRect,"Viewport",Color.white).rectTransform; Stretch(viewport);
+            viewport.gameObject.AddComponent<RectMask2D>();
+            var list = Rect(viewport,name);
+            list.anchorMin = new Vector2(0,1); list.anchorMax = Vector2.one; list.pivot = new Vector2(.5f,1);
+            list.sizeDelta = new Vector2(0,count*step);
+            scroll.viewport = viewport; scroll.content = list; scroll.movementType = ScrollRect.MovementType.Clamped;
+            return list;
+        }
+        private void PickerRow(RectTransform parent, string name, string title, string detail, int index, float step, bool selected, UnityAction action)
+        {
+            var button = Button(parent,"",selected ? Gold : Cream,action);
+            button.name = name;
+            var r = button.GetComponent<RectTransform>();
+            r.anchorMin = new Vector2(0,1); r.anchorMax = Vector2.one; r.pivot = new Vector2(.5f,1);
+            r.anchoredPosition = new Vector2(0,-index*step); r.sizeDelta = new Vector2(0,step-12);
+            var titleLabel = Label(r,"Title",title,25,Navy);
+            titleLabel.fontStyle = FontStyles.Bold; titleLabel.alignment = TextAlignmentOptions.MidlineLeft;
+            Stretch(titleLabel.rectTransform); titleLabel.rectTransform.offsetMin = new Vector2(18,step-56); titleLabel.rectTransform.offsetMax = new Vector2(-18,-12);
+            titleLabel.enableAutoSizing = true; titleLabel.fontSizeMin = 16; titleLabel.fontSizeMax = 25;
+            var description = Label(r,"Detail",detail,18,Navy);
+            description.alignment = TextAlignmentOptions.TopLeft;
+            Stretch(description.rectTransform); description.rectTransform.offsetMin = new Vector2(18,10); description.rectTransform.offsetMax = new Vector2(-18,-48);
         }
 
         public void ShowComplete(string lessonTitle, bool hasNext)
@@ -214,7 +283,7 @@ namespace EnglishLearning
             float homeSpace = homeNavigationEnabled ? 58 : 0;
             var message = Label(panel, "Result", lessonTitle + "\nYou found every word.", 26, Navy);
             Place(message.rectTransform, new Vector2(.5f,.5f), new Vector2(.5f,.5f), new Vector2(0,35), new Vector2(500,90));
-            var next = Button(panel, hasNext ? "Next lesson" : "Choose a lesson", Gold, () => NextPressed?.Invoke());
+            var next = Button(panel, hasNext ? "Next lesson" : "Choose a topic", Gold, () => NextPressed?.Invoke());
             Place(next.GetComponent<RectTransform>(), new Vector2(.5f,0), new Vector2(.5f,0), new Vector2(0,100 + homeSpace), new Vector2(400,62));
             var replay = Button(panel, "Play again", Cream, () => ReplayPressed?.Invoke());
             Place(replay.GetComponent<RectTransform>(), new Vector2(.5f,0), new Vector2(.5f,0), new Vector2(0,26 + homeSpace), new Vector2(400,54));
@@ -230,13 +299,16 @@ namespace EnglishLearning
             label.enableAutoSizing = true; label.fontSizeMin = 12; label.fontSizeMax = 21;
         }
 
-        private void OpenDialog()
+        private void OpenDialog(bool selection = false)
         {
             foreach (Transform child in modal) { child.gameObject.SetActive(false); Destroy(child.gameObject); }
+            content.gameObject.SetActive(!selection);
+            modal.GetComponent<Image>().color = selection ? Cream : new Color(Navy.r,Navy.g,Navy.b,.94f);
             modal.gameObject.SetActive(true); Flashlight.InputEnabled = false;
         }
         private void CloseDialog()
         {
+            content.gameObject.SetActive(true);
             modal.gameObject.SetActive(false); Flashlight.ResetLight(); Flashlight.InputEnabled = true;
         }
         private RectTransform DialogCard(string title, Vector2 size)
@@ -247,6 +319,7 @@ namespace EnglishLearning
             Place(panel,new Vector2(.5f,.5f),new Vector2(.5f,.5f),Vector2.zero,new Vector2(width,height));
             var heading = Label(panel,"Heading",title,25,Navy); heading.fontStyle = FontStyles.Bold;
             Place(heading.rectTransform,new Vector2(.5f,1),new Vector2(.5f,1),new Vector2(0,-24),new Vector2(width-40,44));
+            heading.enableAutoSizing = true; heading.fontSizeMin = 14; heading.fontSizeMax = 25;
             return panel;
         }
 
